@@ -1,0 +1,34 @@
+# new-prod
+
+Operational bundle for running the SCB data collection pipeline and related batch utilities.
+
+## Layout
+- `main.py` / `main.conf` - entry point and configuration for the arbetsstallen -> foretag -> join pipeline.
+- `code/` - shared modules (arbetsstallen fetcher, foretag fetcher with CSV cache, joiner, logging helpers).
+- `cache/foretag_cache.csv` - persistent foretag cache (auto-created).
+- `output/` - pipeline artefacts (`arbetsstallen/`, `foretag/`, `join/`).
+- `logs/` - log files for each stage plus the pipeline driver.
+- `scripts/fetch_bransch_kod.py` - ad-hoc batch script migrated from `adhoc-batch/`.
+- `cert-pw/` - client certificate bundle and password used by the API calls.
+
+## Running the pipeline
+1. Adjust `main.conf` to match the desired SNI codes, arbetsstallen branch depth, zip range, and cache TTL.
+2. Ensure `cert-pw/` contains the active SCB certificate bundle and password file.
+3. Execute the pipeline from `new-prod/`:
+
+   ```bash
+   python main.py            # Uses main.conf in the folder
+   python main.py alt.conf   # Optional explicit config path (relative or absolute)
+   ```
+
+The foretag stage reuses entries in `cache/foretag_cache.csv` when they are newer than the configured `foretag_cache_max_age`.
+Fresh API responses overwrite stale rows and extend the cache automatically.
+
+## Ad-hoc batch script
+`scripts/fetch_bransch_kod.py` keeps its original interface. Place the encrypted CSV (`input.csv.enc`) and password (`pw.txt`) alongside the script before running:
+
+```bash
+python scripts/fetch_bransch_kod.py --help
+```
+
+Outputs are flushed to `scripts/output.csv`, allowing interrupted runs to resume safely.
