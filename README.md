@@ -1,4 +1,4 @@
-# new-prod
+# SCB API pipeline
 
 Operational bundle for running the SCB data collection pipeline and related batch utilities.
 
@@ -13,7 +13,7 @@ Operational bundle for running the SCB data collection pipeline and related batc
 ## Running the pipeline
 1. Adjust `main.conf` to match the desired SNI codes, arbetsstallen branch depth, zip range, and cache TTL.
 2. Ensure `cert-pw/` contains the active SCB certificate bundle and password file.
-3. Execute the pipeline from `new-prod/`:
+3. Execute the pipeline from the project root (`scb-api-pipeline/`):
 
    ```bash
    python main.py            # Uses main.conf in the folder
